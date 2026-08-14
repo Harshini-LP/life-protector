@@ -17,10 +17,12 @@
     <h1>🚨 LIFE PROTECTOR</h1>
     <p>Tagline: "Be the Protector. Save a Life."</p>
 
-  <!-- Keep your existing styles, just update the onclick attributes -->
-<button id="sosButton" onclick="handleSosClick()">🚨 SOS (Click 3 Times)</button>
-<button id="stopVoiceButton" onclick="stopEmergencyVoice()">🛑 STOP VOICE</button>
-
+  <!-- SOS Button -->
+    <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
+   
+    <!-- Stop Audio Button -->
+    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
+   
    
     <div class="status-box" id="statusBox">
         Network Status: <span id="netStatus" style="color: lime;">Checking...</span>
