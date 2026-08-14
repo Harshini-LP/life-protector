@@ -1,0 +1,16 @@
+.stop-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.2s ease-in-out;
+}
+
+.stop-btn:hover {
+  background-color: #c9302c;
+}
