@@ -7,7 +7,8 @@
     <link rel="manifest" href="/manifest.json">
     <style>
         body { font-family: Arial, sans-serif; text-align: center; background: #111; color: #fff; padding: 20px; }
-        .sos-btn { width: 200px; height: 200px; background: red; color: white; border-radius: 50%; font-size: 24px; font-weight: bold; border: 10px solid #500; cursor: pointer; margin-top: 50px; box-shadow: 0 0 20px red; }
+        .sos-btn { width: 200px; height: 200px; background: red; color: white; border-radius: 50%; font-size: 24px; font-weight: bold; border: 10px solid #500; cursor: pointer; margin-top: 50px; box-shadow: 0 0 20px red; display: inline-block; user-select: none; -webkit-tap-highlight-color: transparent; }
+        .stop-btn { display: none; background-color: #d9534f; color: white; padding: 12px 24px; font-size: 18px; font-weight: bold; border: none; border-radius: 25px; cursor: pointer; margin: 20px auto; box-shadow: 0 4px 10px rgba(217, 83, 79, 0.4); }
         .status-box { margin-top: 30px; padding: 15px; border-radius: 8px; font-size: 18px; background: #222; }
     </style>
 </head>
@@ -18,10 +19,11 @@
 
     <!-- SOS Button -->
     <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
-    
+   
+    <br>
     <!-- Stop Audio Button -->
-    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
-    
+    <button class="stop-btn" id="stopButton" onclick="stopSOS()">🛑 STOP VOICE</button>
+   
     <div class="status-box" id="statusBox">
         Network Status: <span id="netStatus" style="color: lime;">Checking...</span>
         <p id="actionLog">System Ready. Press SOS in emergency.</p>
@@ -52,8 +54,19 @@
         window.addEventListener('offline', updateNetworkStatus);
         updateNetworkStatus();
 
-        // 3-Press Key/Click Monitor Simulation
+        // 💡 மொபைல் பிரவுசர்களை முதல் க்ளிக்கிலேயே ஏமாற்றி வாய்ஸ் என்ஜினை ஆன் செய்யும் தந்திரம் (User Gesture Unlock)
+        function unlockMobileVoice() {
+            const silentUtterance = new SpeechSynthesisUtterance("");
+            window.speechSynthesis.speak(silentUtterance);
+        }
+
+        // 3-Press Click Monitor Simulation
         sosButton.addEventListener('click', () => {
+            // முதல் முறை தொடும்போதே வாய்ஸ் என்ஜின் அன்லாக் ஆகிவிடும்!
+            if (clickCount === 0) {
+                unlockMobileVoice();
+            }
+
             clickCount++;
             actionLog.textContent = `Trigger clicks: ${clickCount}/3`;
 
@@ -65,42 +78,47 @@
 
         // Main Emergency Workflow Engine
         function executeEmergencyProtocol() {
-    if ('vibrate' in navigator) navigator.vibrate(200);
-    actionLog.textContent = "Life Protector activated. Stay calm.";
+            if ('vibrate' in navigator) navigator.vibrate(200);
+            actionLog.textContent = "Life Protector activated. Stay calm.";
 
-    const guardianNumbers = ["+919876543210", "+919876543211"]; 
-    const policeNumber = "100";
-    const ambulanceNumber = "108";
+            // 3 முறை அழுத்தியதும் வாய்ஸ் ஃபங்ஷன் இயங்கும்
+            if (typeof startSOS === "function") {
+                startSOS();
+            }
 
-    // 💡 ஆஃப்லைனில் இருந்தால் GPS-க்காகக் காத்திருக்காமல் உடனே மெசேஜ் காட்டும் ஸ்மார்ட் லாஜிக்
-    if (!navigator.onLine) {
-        actionLog.innerHTML = `⚠️ OFFLINE MODE: Net Illai!<br>
-        <strong>🚨 SMS Sent to Police (${policeNumber}) & Ambulance (${ambulanceNumber})</strong><br>
-        <strong>👨‍👩‍👦 SMS Sent to Guardians (${guardianNumbers.join(', ')})</strong><br><br>
-        <strong>📄 SMS Payload: EMERGENCY! Help at https://google.com (Using Last Known GPS)</strong><br><br>
-        Calling nearest emergency response node via Fallback Voice...`;
-        return; // இங்கேயே கோடு முடிந்துவிடும், பிரீஸ் ஆகாது!
-    }
+            const guardianNumbers = ["+919876543210", "+919876543211"];
+            const policeNumber = "100";
+            const ambulanceNumber = "108";
 
-    // ஆன்லைனில் இருந்தால் மட்டும் லோகேஷனைத் தேடும்
-    navigator.geolocation.getCurrentPosition((position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        actionLog.innerHTML = "🔴 ONLINE MODE: Sending Live GPS & 10s Buffer to Control Room...";
-        
-        fetch('/process-trigger.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lat: lat, lng: lng, network: 'ONLINE' })
-        })
-        .then(res => res.json())
-        .then(data => actionLog.textContent = data.message);
-    }, (err) => {
-        actionLog.textContent = "Location access denied. Sending basic panic beacon.";
-    });
-}
-</script>
-    
-        <script src="voice.js"></script>
+            if (!navigator.onLine) {
+                actionLog.innerHTML = `⚠️ OFFLINE MODE: Net Illai!<br>
+                <strong>🚨 SMS Sent to Police (${policeNumber}) & Ambulance (${ambulanceNumber})</strong><br>
+                <strong>👨‍👩‍👦 SMS Sent to Guardians (${guardianNumbers.join(', ')})</strong><br><br>
+                <strong>📄 SMS Payload: EMERGENCY! Help at https://google.com (Using Last Known GPS)</strong><br><br>
+                Calling nearest emergency response node via Fallback Voice...`;
+                return; 
+            }
+
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                actionLog.innerHTML = "🔴 ONLINE MODE: Sending Live GPS & 10s Buffer to Control Room...";
+               
+                fetch('/process-trigger.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat: lat, lng: lng, network: 'ONLINE' })
+                })
+                .then(res => res.json())
+                .then(data => actionLog.textContent = data.message)
+                .catch(err => console.log("Fetch/Mock active"));
+            }, (err) => {
+                actionLog.textContent = "Location access denied. Sending basic panic beacon.";
+            });
+        }
+    </script>
+
+    <!-- வாய்ஸ் கைடு ஃபைல் இணைப்பு -->
+    <script src="voice.js"></script>
 </body>
 </html>
