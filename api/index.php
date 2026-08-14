@@ -100,6 +100,7 @@
     });
 }
 
+        <script src="voice.js">
     </script>
 </body>
 </html>
