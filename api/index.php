@@ -54,7 +54,7 @@
             clickCount++;
             actionLog.textContent = `Trigger clicks: ${clickCount}/5`;
 
-            if (clickCount >= 5) {
+            if (clickCount >= 3) {
                 executeEmergencyProtocol();
                 clickCount = 0; // Reset
             }
