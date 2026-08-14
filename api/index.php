@@ -21,7 +21,7 @@
     <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
    
     <!-- Stop Audio Button -->
-    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
+    <button class="stop-btn" onclick="stopSOS()" background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
    
    
     <div class="status-box" id="statusBox">
