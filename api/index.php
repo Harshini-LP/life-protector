@@ -52,7 +52,7 @@
         // 3-Press Key/Click Monitor Simulation
         sosButton.addEventListener('click', () => {
             clickCount++;
-            actionLog.textContent = `Trigger clicks: ${clickCount}/5`;
+            actionLog.textContent = `Trigger clicks: ${clickCount}/3`;
 
             if (clickCount >= 3) {
                 executeEmergencyProtocol();
