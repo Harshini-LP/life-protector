@@ -1,51 +1,38 @@
-let speechInterval;
+// voice.js
+let emergencySpeech = null;
+let isVoiceActive = false;
 
-function startSOS() {
-    window.speechSynthesis.cancel();
-    clearInterval(speechInterval);
+function triggerEmergency() {
+    if (isVoiceActive) return; 
+    isVoiceActive = true;
+    playVoiceGuide();
+}
 
-    const stopButton = document.getElementById("stopButton");
-    if (stopButton) {
-        stopButton.style.display = "inline-block";
-    }
+function playVoiceGuide() {
+    if (!isVoiceActive) return;
 
-    const textToSpeak = "Help me! Help me!";
-    
-    // 💡 மாற்றம்: பிரவுசரின் வாய்ஸ் லிஸ்ட் லோடு ஆகும் வரை காத்திருந்து பேசும் பாதுகாப்பு குறியீடு
-    if (window.speechSynthesis.getVoices().length === 0) {
-        window.speechSynthesis.onvoiceschanged = function() {
-            speakText(textToSpeak);
-        };
-    } else {
-        speakText(textToSpeak);
-    }
+    emergencySpeech = new SpeechSynthesisUtterance("Please help me. Emergency. Please help me.");
+    emergencySpeech.rate = 1.0;  
+    emergencySpeech.pitch = 1.1; 
+    emergencySpeech.volume = 1.0; 
 
-    speechInterval = setInterval(() => {
-        if (!window.speechSynthesis.speaking) {
-            speakText(textToSpeak);
+    emergencySpeech.onend = function() {
+        if (isVoiceActive) {
+            setTimeout(playVoiceGuide, 1000); 
         }
-    }, 1500); 
+    };
+
+    emergencySpeech.onerror = function(event) {
+        console.error("Speech generation error:", event.error);
+    };
+
+    window.speechSynthesis.speak(emergencySpeech);
 }
 
-function speakText(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US'; 
-    utterance.rate = 1.1;     
-    utterance.volume = 1.0;   
-    window.speechSynthesis.speak(utterance);
-}
-
-function stopSOS() {
-    window.speechSynthesis.cancel();
-    clearInterval(speechInterval);
-    
-    const stopButton = document.getElementById("stopButton");
-    if (stopButton) {
-        stopButton.style.display = "none";
+function stopEmergencyVoice() {
+    isVoiceActive = false;
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
     }
-    
-    const actionLog = document.getElementById("actionLog");
-    if (actionLog) {
-        actionLog.textContent = "System Ready. Emergency cancelled.";
-    }
+    console.log("Emergency voice guide has been stopped.");
 }
