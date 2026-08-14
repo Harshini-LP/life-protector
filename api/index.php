@@ -17,11 +17,12 @@
     <h1>🚨 LIFE PROTECTOR</h1>
     <p>Tagline: "Be the Protector. Save a Life."</p>
 
-   <!-- SOS Button that triggers the emergency voice guide -->
-<button id="sosButton" onclick="triggerEmergency()">🚨 SOS (Click 3 Times)</button>
-
-<!-- Stop Button to cancel the ongoing voice guide -->
-<button id="stopVoiceButton" onclick="stopEmergencyVoice()">🛑 STOP VOICE</button>
+  <!-- SOS Button -->
+    <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
+   
+    <!-- Stop Audio Button -->
+    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
+   
 
    
     <div class="status-box" id="statusBox">
