@@ -20,7 +20,7 @@
     <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
     
     <!-- Stop Audio Button -->
-    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white; id="stopButton">🛑 STOP VOICE</button>
+    <button class="stop-btn" onclick="stopSOS()" style="display:none; background-color:red; color:white" id="stopButton">🛑 STOP VOICE</button>
     
     <div class="status-box" id="statusBox">
         Network Status: <span id="netStatus" style="color: lime;">Checking...</span>
@@ -99,8 +99,8 @@
         actionLog.textContent = "Location access denied. Sending basic panic beacon.";
     });
 }
-
-        <script src="voice.js">
-    </script>
+</script>
+    
+        <script src="voice.js"></script>
 </body>
 </html>
