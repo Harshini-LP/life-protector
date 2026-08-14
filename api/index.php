@@ -81,7 +81,7 @@
             if ('vibrate' in navigator) navigator.vibrate(200);
             actionLog.textContent = "Life Protector activated. Stay calm.";
 
-            // 3 முறை அழுத்தியதும் வாய்ஸ் ஃபங்ஷன் இயங்கும்
+            // 3 முறை அழுத்தியதும் voice.js-ல் உள்ள வாய்ஸ் ஃபங்ஷன் இயங்கும்
             if (typeof startSOS === "function") {
                 startSOS();
             }
