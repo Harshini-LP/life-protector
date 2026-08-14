@@ -17,7 +17,7 @@
     <p>Tagline: "Be the Protector. Save a Life."</p>
 
     <!-- 5 Clicks Hardware simulation or Direct Press -->
-    <button class="sos-btn" id="sosButton">SOS (Click 5 Times)</button>
+    <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
 
     <div class="status-box" id="statusBox">
         Network Status: <span id="netStatus" style="color: lime;">Checking...</span>
