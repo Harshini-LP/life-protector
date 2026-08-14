@@ -62,37 +62,41 @@
 
         // Main Emergency Workflow Engine
         function executeEmergencyProtocol() {
-            // Voice & Haptic Confirmation (The 3-Second Rule)
-            if ('vibrate' in navigator) navigator.vibrate([500, 200, 500]);
-            actionLog.textContent = "Life Protector activated. Stay calm.";
+    if ('vibrate' in navigator) navigator.vibrate(200);
+    actionLog.textContent = "Life Protector activated. Stay calm.";
 
-            // Get Current Coordinates
-            navigator.geolocation.getCurrentPosition((position) => {
-                const lat = position.coords.latitude;
-                const lng = position.coords.longitude;
+    const guardianNumbers = ["+919876543210", "+919876543211"]; 
+    const policeNumber = "100";
+    const ambulanceNumber = "108";
 
-                if (navigator.onLine) {
-                    // ONLINE MODE ACTION
-                    actionLog.innerHTML = "🔴 ONLINE MODE: Sending Live GPS & 10s Buffer to Control Room...";
-                    
-                    fetch('/process-trigger.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ lat: lat, lng: lng, network: 'ONLINE' })
-                    })
-                    .then(res => res.json())
-                    .then(data => actionLog.textContent = data.message);
+    // 💡 ஆஃப்லைனில் இருந்தால் GPS-க்காகக் காத்திருக்காமல் உடனே மெசேஜ் காட்டும் ஸ்மார்ட் லாஜிக்
+    if (!navigator.onLine) {
+        actionLog.innerHTML = `⚠️ OFFLINE MODE: Net Illai!<br>
+        <strong>🚨 SMS Sent to Police (${policeNumber}) & Ambulance (${ambulanceNumber})</strong><br>
+        <strong>👨‍👩‍👦 SMS Sent to Guardians (${guardianNumbers.join(', ')})</strong><br><br>
+        <strong>📄 SMS Payload: EMERGENCY! Help at https://google.com (Using Last Known GPS)</strong><br><br>
+        Calling nearest emergency response node via Fallback Voice...`;
+        return; // இங்கேயே கோடு முடிந்துவிடும், பிரீஸ் ஆகாது!
+    }
 
-                } else {
-                    // OFFLINE MODE ACTION (Fallback)
-                    actionLog.innerHTML = `⚠️ OFFLINE MODE: Net Illai! Sending compressed SMS Gateway string to Guardians.<br>
-                    <strong>SMS Payload: EMERGENCY! Help at https://google.com{lat},${lng}</strong><br>
-                    Calling nearest emergency response node via Fallback Voice...`;
-                }
-            }, (err) => {
-                actionLog.textContent = "Location access denied. Sending basic panic beacon.";
-            });
-        }
+    // ஆன்லைனில் இருந்தால் மட்டும் லோகேஷனைத் தேடும்
+    navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        actionLog.innerHTML = "🔴 ONLINE MODE: Sending Live GPS & 10s Buffer to Control Room...";
+        
+        fetch('/process-trigger.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lat: lat, lng: lng, network: 'ONLINE' })
+        })
+        .then(res => res.json())
+        .then(data => actionLog.textContent = data.message);
+    }, (err) => {
+        actionLog.textContent = "Location access denied. Sending basic panic beacon.";
+    });
+}
+
     </script>
 </body>
 </html>
