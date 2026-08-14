@@ -16,7 +16,7 @@
     <h1>🚨 LIFE PROTECTOR</h1>
     <p>Tagline: "Be the Protector. Save a Life."</p>
 
-    <!-- 5 Clicks Hardware simulation or Direct Press -->
+    <!-- 3 Clicks Hardware simulation or Direct Press -->
     <button class="sos-btn" id="sosButton">SOS (Click 3 Times)</button>
 
     <div class="status-box" id="statusBox">
@@ -49,7 +49,7 @@
         window.addEventListener('offline', updateNetworkStatus);
         updateNetworkStatus();
 
-        // 5-Press Key/Click Monitor Simulation
+        // 3-Press Key/Click Monitor Simulation
         sosButton.addEventListener('click', () => {
             clickCount++;
             actionLog.textContent = `Trigger clicks: ${clickCount}/5`;
