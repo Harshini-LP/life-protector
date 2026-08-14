@@ -1,101 +1,57 @@
-// voice.js
+let clickCount = 0;
+let voiceLoopInterval = null;
 
-// Variables to keep track of clicks and speech states
-let sosClickCount = 0;
-let sosClickTimeout = null;
-let emergencySpeech = null;
-let isVoiceActive = false;
+const sosButton = document.getElementById('sosButton');
+const stopVoiceButton = document.getElementById('stopVoiceButton');
 
-/**
- * Tracks and requires exactly 3 rapid clicks within 2 seconds
- */
-function handleSosClick() {
-    sosClickCount++;
+// Function to trigger loud emergency voice announcements
+function speakEmergencyAlert() {
+  // Clear any existing speech queues before starting a new one
+  window.speechSynthesis.cancel(); 
 
-    if (sosClickTimeout) {
-        clearTimeout(sosClickTimeout);
-    }
-
-    if (sosClickCount === 3) {
-        sosClickCount = 0;
-        triggerEmergency();
-    } else {
-        sosClickTimeout = setTimeout(() => {
-            sosClickCount = 0;
-        }, 2000);
-    }
+  const alertText = "Emergency! Emergency! Life Protector activated. Please help me.";
+  const utterance = new SpeechSynthesisUtterance(alertText);
+  
+  // Settings for maximum clarity and urgency
+  utterance.rate = 1.0;  // Normal human speed
+  utterance.pitch = 1.1; // Slightly high-pitched to grab immediate attention
+  utterance.volume = 1.0; // Forces maximum browser volume output
+  
+  window.speechSynthesis.speak(utterance);
 }
 
-/**
- * Starts the emergency voice loop
- */
-function triggerEmergency() {
-    if (isVoiceActive) return;
+// SOS Button Event Listener (Requires 3 clicks)
+sosButton.addEventListener('click', () => {
+  clickCount++;
+  
+  if (clickCount === 3) {
+    // Show the Stop Voice button on screen
+    stopVoiceButton.style.display = 'block';
+    
+    // Speak immediately
+    speakEmergencyAlert();
+    
+    // Set up a loop to repeat the voice alert every 6 seconds
+    voiceLoopInterval = setInterval(() => {
+      speakEmergencyAlert();
+    }, 6000);
+    
+    // Reset click count counter for subsequent safety uses
+    clickCount = 0; 
+  }
+});
 
-    isVoiceActive = true;
-
-    // Show STOP VOICE button
-    const stopButton = document.getElementById("stopButton");
-    if (stopButton) {
-        stopButton.style.display = "inline-block";
-    }
-
-    playVoiceGuide();
-}
-
-/**
- * Voice loop: "Please help me"
- */
-function playVoiceGuide() {
-    if (!isVoiceActive) return;
-
-    emergencySpeech = new SpeechSynthesisUtterance("Please help me.");
-
-    emergencySpeech.rate = 1.0;
-    emergencySpeech.pitch = 1.1;
-    emergencySpeech.volume = 1.0;
-
-    emergencySpeech.onend = function () {
-        if (isVoiceActive) {
-            setTimeout(playVoiceGuide, 500);
-        }
-    };
-
-    emergencySpeech.onerror = function (event) {
-        console.error("Speech error:", event.error);
-    };
-
-    window.speechSynthesis.speak(emergencySpeech);
-}
-
-/**
- * Stops the voice loop
- */
-function stopEmergencyVoice() {
-    isVoiceActive = false;
-    sosClickCount = 0;
-
-    if (sosClickTimeout) {
-        clearTimeout(sosClickTimeout);
-        sosClickTimeout = null;
-    }
-
-    if (window.speechSynthesis) {
-        window.speechSynthesis.cancel();
-    }
-
-    // Hide STOP VOICE button
-    const stopButton = document.getElementById("stopButton");
-    if (stopButton) {
-        stopButton.style.display = "none";
-    }
-
-    console.log("Emergency voice stopped.");
-}
-
-/**
- * Called by STOP VOICE button
- */
-function stopSOS() {
-    stopEmergencyVoice();
-}
+// Stop Voice Button Event Listener
+stopVoiceButton.addEventListener('click', () => {
+  // 1. Terminate all active browser speaking queues immediately
+  window.speechSynthesis.cancel();
+  
+  // 2. Kill the repeating interval loop
+  if (voiceLoopInterval) {
+    clearInterval(voiceLoopInterval);
+    voiceLoopInterval = null;
+  }
+  
+  // 3. Hide the stop button again until the next real emergency
+  stopVoiceButton.style.display = 'none';
+});
