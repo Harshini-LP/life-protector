@@ -119,9 +119,7 @@
         }
     </script>
 
-    <!-- Your existing HTML content, buttons, etc. -->
-    <button id="sosButton" onclick="triggerEmergency()">🚨 SOS</button>
-    <button id="stopVoiceButton" onclick="stopEmergencyVoice()">🛑 STOP VOICE</button>
+   
 
     <!-- Link your voice file here -->
     <script src="voice.js"></script>
